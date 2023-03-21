@@ -292,7 +292,7 @@ func (txInfo *OfferTxInfo) Hash(hFunc hash.Hash) (msgHash []byte, err error) {
 	} else {
 		msgHash = Poseidon(txInfo.Type, txInfo.OfferId, txInfo.AccountIndex, txInfo.NftIndex,
 			txInfo.AssetId, packedAmount, txInfo.ListedAt, txInfo.ExpiredAt, txInfo.ChanelAccountIndex,
-			txInfo.ChanelRate, 0)
+			txInfo.ChanelRate)
 		return msgHash, nil
 	}
 }

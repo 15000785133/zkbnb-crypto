@@ -71,7 +71,7 @@ func ComputeHashFromSellOfferTx(api API, tx OfferTxConstraints) (hashVal Variabl
 	return poseidon.Poseidon(api,
 		tx.Type, tx.OfferId, tx.AccountIndex, tx.NftIndex,
 		tx.AssetId, tx.AssetAmount, tx.ListedAt, tx.ExpiredAt, tx.ChanelAccountIndex,
-		tx.ChanelRate, 0,
+		tx.ChanelRate,
 	)
 }
 
