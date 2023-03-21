@@ -84,6 +84,8 @@ func SetAtomicMatchTxWitness(tx *AtomicMatchTx) (witness AtomicMatchTxConstraint
 		GasAccountIndex:   tx.GasAccountIndex,
 		GasFeeAssetId:     tx.GasFeeAssetId,
 		GasFeeAssetAmount: tx.GasFeeAssetAmount,
+		BuyChanelAmount:   tx.BuyChanelAmount,
+		SellChanelAmount:  tx.SellChanelAmount,
 	}
 	return witness
 }
