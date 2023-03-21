@@ -192,23 +192,24 @@ func (txInfo *OfferTxInfo) Validate() error {
 		return ErrChanelRateTooHigh
 	}
 
-	//PlatformFeeRate
-	if txInfo.PlatformRate < minRate {
-		return ErrPlatformFeeRateTooLow
-	}
-	if txInfo.PlatformRate > maxRate {
-		return ErrPlatformFeeRateTooHigh
-	}
-
-	//PlatformFee
-	if txInfo.PlatformAmount == nil {
-		return fmt.Errorf("PlatformAmount should not be nil")
-	}
-	if txInfo.PlatformAmount.Cmp(minAssetAmount) <= 0 {
-		return ErrPlatformFeeTooLow
-	}
-	if txInfo.PlatformAmount.Cmp(maxAssetAmount) > 0 {
-		return ErrPlatformFeeTooHigh
+	if txInfo.Type == BuyOfferType {
+		//PlatformFeeRate
+		if txInfo.PlatformRate < minRate {
+			return ErrPlatformFeeRateTooLow
+		}
+		if txInfo.PlatformRate > maxRate {
+			return ErrPlatformFeeRateTooHigh
+		}
+		//PlatformFee
+		if txInfo.PlatformAmount == nil {
+			return fmt.Errorf("PlatformAmount should not be nil")
+		}
+		if txInfo.PlatformAmount.Cmp(minAssetAmount) <= 0 {
+			return ErrPlatformFeeTooLow
+		}
+		if txInfo.PlatformAmount.Cmp(maxAssetAmount) > 0 {
+			return ErrPlatformFeeTooHigh
+		}
 	}
 	return nil
 }
@@ -277,15 +278,23 @@ func (txInfo *OfferTxInfo) Hash(hFunc hash.Hash) (msgHash []byte, err error) {
 		log.Println("[ComputeTransferMsgHash] assetAmount unable to packed amount:", err.Error())
 		return nil, err
 	}
-	packedPlatformAmount, err := ToPackedAmount(txInfo.PlatformAmount)
-	if err != nil {
-		log.Println("[ComputeTransferMsgHash] platformAmount unable to packed amount:", err.Error())
-		return nil, err
+	if txInfo.Type == BuyOfferType {
+		packedPlatformAmount, err := ToPackedAmount(txInfo.PlatformAmount)
+		if err != nil {
+			log.Println("[ComputeTransferMsgHash] platformAmount unable to packed amount:", err.Error())
+			return nil, err
+		}
+
+		msgHash = Poseidon(txInfo.Type, txInfo.OfferId, txInfo.AccountIndex, txInfo.NftIndex,
+			txInfo.AssetId, packedAmount, txInfo.ListedAt, txInfo.ExpiredAt, txInfo.ChanelAccountIndex,
+			txInfo.ChanelRate, txInfo.PlatformRate, packedPlatformAmount)
+		return msgHash, nil
+	} else {
+		msgHash = Poseidon(txInfo.Type, txInfo.OfferId, txInfo.AccountIndex, txInfo.NftIndex,
+			txInfo.AssetId, packedAmount, txInfo.ListedAt, txInfo.ExpiredAt, txInfo.ChanelAccountIndex,
+			txInfo.ChanelRate, 0)
+		return msgHash, nil
 	}
-	msgHash = Poseidon(txInfo.Type, txInfo.OfferId, txInfo.AccountIndex, txInfo.NftIndex,
-		txInfo.AssetId, packedAmount, txInfo.ListedAt, txInfo.ExpiredAt, txInfo.ChanelAccountIndex,
-		txInfo.ChanelRate, txInfo.PlatformRate, packedPlatformAmount)
-	return msgHash, nil
 }
 
 func (txInfo *OfferTxInfo) GetGas() (int64, int64, *big.Int) {

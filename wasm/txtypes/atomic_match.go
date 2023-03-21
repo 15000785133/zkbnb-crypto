@@ -258,12 +258,6 @@ func (txInfo *AtomicMatchTxInfo) Hash(hFunc hash.Hash) (msgHash []byte, err erro
 		log.Println("[ComputeTransferMsgHash] unable to packed amount:", err.Error())
 		return nil, err
 	}
-	packedSellPlatformAmount, err := ToPackedAmount(txInfo.SellOffer.PlatformAmount)
-	if err != nil {
-		log.Println("[ComputeTransferMsgHash] packedSellPlatformAmount unable to packed amount:", err.Error())
-		return nil, err
-	}
-
 	packedFee, err := ToPackedFee(txInfo.GasFeeAssetAmount)
 	if err != nil {
 		log.Println("[ComputeTransferMsgHash] unable to packed amount:", err.Error())
@@ -289,7 +283,7 @@ func (txInfo *AtomicMatchTxInfo) Hash(hFunc hash.Hash) (msgHash []byte, err erro
 	sellOfferHash := Poseidon(txInfo.SellOffer.Type, txInfo.SellOffer.OfferId, txInfo.SellOffer.AccountIndex, txInfo.SellOffer.NftIndex,
 		txInfo.SellOffer.AssetId, packedSellAmount, txInfo.SellOffer.ListedAt, txInfo.SellOffer.ExpiredAt,
 		sellerSig.R.X.Marshal(), sellerSig.R.Y.Marshal(), sellerSig.S[:], txInfo.SellOffer.ChanelAccountIndex,
-		txInfo.SellOffer.ChanelRate, txInfo.SellOffer.PlatformRate, packedSellPlatformAmount)
+		txInfo.SellOffer.ChanelRate, 0)
 	msgHash = Poseidon(ChainId, TxTypeAtomicMatch, txInfo.AccountIndex, txInfo.Nonce, txInfo.ExpiredAt, txInfo.GasFeeAssetId, packedFee, buyOfferHash, sellOfferHash)
 	return msgHash, nil
 }

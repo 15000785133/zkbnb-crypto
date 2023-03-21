@@ -59,11 +59,19 @@ func EmptyAtomicMatchTxWitness() (witness AtomicMatchTxConstraints) {
 	}
 }
 
-func ComputeHashFromOfferTx(api API, tx OfferTxConstraints) (hashVal Variable) {
+func ComputeHashFromBuyOfferTx(api API, tx OfferTxConstraints) (hashVal Variable) {
 	return poseidon.Poseidon(api,
 		tx.Type, tx.OfferId, tx.AccountIndex, tx.NftIndex,
 		tx.AssetId, tx.AssetAmount, tx.ListedAt, tx.ExpiredAt, tx.ChanelAccountIndex,
 		tx.ChanelRate, tx.PlatformRate, tx.PlatformAmount,
+	)
+}
+
+func ComputeHashFromSellOfferTx(api API, tx OfferTxConstraints) (hashVal Variable) {
+	return poseidon.Poseidon(api,
+		tx.Type, tx.OfferId, tx.AccountIndex, tx.NftIndex,
+		tx.AssetId, tx.AssetAmount, tx.ListedAt, tx.ExpiredAt, tx.ChanelAccountIndex,
+		tx.ChanelRate, 0,
 	)
 }
 
@@ -101,9 +109,9 @@ func ComputeHashFromAtomicMatchTx(api API, tx AtomicMatchTxConstraints, nonce Va
 		tx.SellOffer.Sig.S,
 		tx.SellOffer.ChanelAccountIndex,
 		tx.SellOffer.ChanelRate,
-		tx.SellOffer.PlatformRate,
-		tx.SellOffer.PlatformAmount,
+		0,
 	)
+
 	return poseidon.Poseidon(api,
 		ChainId, TxTypeAtomicMatch, tx.AccountIndex, nonce, expiredAt, tx.GasFeeAssetId, tx.GasFeeAssetAmount, buyerOfferHash, sellerOfferHash,
 	)
@@ -142,7 +150,7 @@ func VerifyAtomicMatchTx(
 	IsVariableEqual(api, flag, nftBefore.NftIndex, tx.SellOffer.NftIndex)
 	// verify signature
 	hFunc.Reset()
-	buyOfferHash := ComputeHashFromOfferTx(api, tx.BuyOffer)
+	buyOfferHash := ComputeHashFromBuyOfferTx(api, tx.BuyOffer)
 	hFunc.Reset()
 	notBuyer := api.IsZero(api.IsZero(api.Sub(tx.AccountIndex, tx.BuyOffer.AccountIndex)))
 	notBuyer = api.And(flag, notBuyer)
@@ -151,7 +159,7 @@ func VerifyAtomicMatchTx(
 		return pubData, err
 	}
 	hFunc.Reset()
-	sellOfferHash := ComputeHashFromOfferTx(api, tx.SellOffer)
+	sellOfferHash := ComputeHashFromSellOfferTx(api, tx.SellOffer)
 	hFunc.Reset()
 	notSeller := api.IsZero(api.IsZero(api.Sub(tx.AccountIndex, tx.SellOffer.AccountIndex)))
 	notSeller = api.And(flag, notSeller)
