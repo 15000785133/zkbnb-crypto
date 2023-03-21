@@ -184,6 +184,11 @@ func (txInfo *TransferTxInfo) Validate() error {
 		return ErrToL1AddressInvalid
 	}
 
+	// CallData
+	if len(txInfo.CallData) > 2000 {
+		return ErrCallDataInvalid
+	}
+
 	// CallDataHash
 	if !IsValidHashBytes(txInfo.CallDataHash) {
 		return ErrCallDataHashInvalid

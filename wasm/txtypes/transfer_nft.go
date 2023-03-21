@@ -161,6 +161,11 @@ func (txInfo *TransferNftTxInfo) Validate() error {
 		return ErrGasFeeAssetAmountTooHigh
 	}
 
+	// CallData
+	if len(txInfo.CallData) > 2000 {
+		return ErrCallDataInvalid
+	}
+
 	// CallDataHash
 	if !IsValidHashBytes(txInfo.CallDataHash) {
 		return ErrCallDataHashInvalid
