@@ -185,8 +185,13 @@ func (txInfo *TransferTxInfo) Validate() error {
 	}
 
 	// CallData
-	if len(txInfo.CallData) > 2000 {
+	if len(txInfo.CallData) > maxLength {
 		return ErrCallDataInvalid
+	}
+
+	// Memo
+	if len(txInfo.Memo) > maxLength {
+		return ErrMemoInvalid
 	}
 
 	// CallDataHash

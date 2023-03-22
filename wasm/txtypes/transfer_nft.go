@@ -162,7 +162,7 @@ func (txInfo *TransferNftTxInfo) Validate() error {
 	}
 
 	// CallData
-	if len(txInfo.CallData) > 2000 {
+	if len(txInfo.CallData) > maxLength {
 		return ErrCallDataInvalid
 	}
 

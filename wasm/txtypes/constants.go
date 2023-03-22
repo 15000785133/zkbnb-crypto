@@ -87,6 +87,8 @@ const (
 	maxCollectionNameLength int = 64
 
 	maxCollectionIntroductionLength int = 1000
+
+	maxLength int = 2000
 )
 
 var (
