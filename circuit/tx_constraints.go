@@ -167,18 +167,18 @@ func VerifyTransaction(
 	accountsBeforePK.A.Y = api.Select(isChangePubKey, tx.ChangePubKeyTxInfo.PubKey.A.Y, tx.AccountsInfoBefore[0].AccountPk.A.Y)
 
 	// verify signature
-	err = types.VerifyEddsaSig(
-		isLayer2Tx,
-		api,
-		hFunc,
-		hashVal,
-		accountsBeforePK,
-		tx.Signature,
-	)
-	if err != nil {
-		log.Println("[VerifyTx] invalid signature:", err)
-		return nil, pubData, roots, gasDeltas, err
-	}
+	//err = types.VerifyEddsaSig(
+	//	isLayer2Tx,
+	//	api,
+	//	hFunc,
+	//	hashVal,
+	//	accountsBeforePK,
+	//	tx.Signature,
+	//)
+	//if err != nil {
+	//	log.Println("[VerifyTx] invalid signature:", err)
+	//	return nil, pubData, roots, gasDeltas, err
+	//}
 
 	// verify transactions
 	for i := 0; i < types.PubDataBitsSizePerTx; i++ {
